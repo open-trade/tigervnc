@@ -1,0 +1,9 @@
+[package]
+name = "tigervnc"
+version = "1.0.0"
+authors = ["open-trade <info@opentradesolutions.com>"]
+edition = "2018"
+build= "build.rs"
+
+[build-dependencies]
+cc = "1.0"
