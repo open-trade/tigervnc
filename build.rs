@@ -21,16 +21,16 @@ fn build_windows() {
         .compile("libtigervnc.a");
 }
 
-#[cfg(macos)]
+#[cfg(target_os = "macos")]
 fn build_macos() {
     cc::Build::new()
         .includes(std::path::Path::new("common"))
         .flag("-DKEYBOARD_ONLY")
-        .files(&[])
+        .files(&["vncviewer/cocoa.mm"])
         .compile("libtigervnc.a");
 }
 
-#[cfg(macos)]
+#[cfg(target_os = "linux")]
 fn build_linux() {
     cc::Build::new()
         .includes(std::path::Path::new("unix"))

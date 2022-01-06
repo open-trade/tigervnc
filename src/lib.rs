@@ -3,6 +3,8 @@ cfg_if::cfg_if! {
         mod win;
         pub use win::*;
     } else if #[cfg(target_os = "macos")] {
+        mod osx;
+        pub use osx::*;
     } else if #[cfg(target_os = "linux")] {
     }
 }

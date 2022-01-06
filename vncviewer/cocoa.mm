@@ -20,9 +20,11 @@
 #include <config.h>
 #endif
 
+#ifndef KEYBOARD_ONLY
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/x.H>
+#endif
 
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
@@ -50,6 +52,7 @@ const int kVK_Menu = 0x6E;
 
 static bool captured = false;
 
+#ifndef KEYBOARD_ONLY
 int cocoa_get_level(Fl_Window *win)
 {
   NSWindow *nsw;
@@ -190,6 +193,7 @@ int cocoa_is_keyboard_event(const void *event)
     return 0;
   }
 }
+#endif
 
 int cocoa_is_key_press(const void *event)
 {
@@ -400,6 +404,16 @@ int cocoa_event_keysym(const void *event)
 
   key_code = [nsevent keyCode];
 
+#ifdef KEYBOARD_ONLY
+}
+extern "C" int osx_vkey_to_keysym(UInt16 key_code) {
+  size_t i;
+
+  NSString *chars;
+  UInt32 modifiers;
+
+#endif
+
   // Start with keys that either don't generate a symbol, or
   // generate the same symbol as some other key.
   for (i = 0;i < sizeof(kvk_map)/sizeof(kvk_map[0]);i++) {
@@ -407,6 +421,7 @@ int cocoa_event_keysym(const void *event)
       return kvk_map[i][1];
   }
 
+#ifndef KEYBOARD_ONLY
   // OS X always sends the same key code for the decimal key on the
   // num pad, but X11 wants different keysyms depending on if it should
   // be a comma or full stop.
@@ -420,6 +435,7 @@ int cocoa_event_keysym(const void *event)
       return NoSymbol;
     }
   }
+#endif
 
   // We want a "normal" symbol out of the event, which basically means
   // we only respect the shift and alt/altgr modifiers. Cocoa can help
@@ -428,12 +444,14 @@ int cocoa_event_keysym(const void *event)
   // other platforms.
 
   modifiers = 0;
+#ifndef KEYBOARD_ONLY
   if ([nsevent modifierFlags] & NSAlphaShiftKeyMask)
     modifiers |= alphaLock;
   if ([nsevent modifierFlags] & NSShiftKeyMask)
     modifiers |= shiftKey;
   if ([nsevent modifierFlags] & NSAlternateKeyMask)
     modifiers |= optionKey;
+#endif
 
   chars = key_translate(key_code, modifiers);
   if (chars == nil)
@@ -443,9 +461,11 @@ int cocoa_event_keysym(const void *event)
   if ([chars length] != 1)
     return NoSymbol;
 
+#ifndef KEYBOARD_ONLY
   // Dead key?
   if ([[nsevent characters] length] == 0)
     return ucs2keysym(ucs2combining([chars characterAtIndex:0]));
+#endif
 
   return ucs2keysym([chars characterAtIndex:0]);
 }
