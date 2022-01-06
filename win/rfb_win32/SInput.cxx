@@ -492,3 +492,36 @@ void win32::SKeyboard::keyEvent(rdr::U32 keysym, rdr::U32 keycode, bool down)
     doKeyboardEvent(vkCode, flags);
   }
 }
+
+int win32::SKeyboard::keysym_to_vkey(unsigned int keysym, unsigned char* vkCode, unsigned char* extended)
+{
+    if ((keysym >= 32 && keysym <= 126) ||
+        (keysym >= 160 && keysym <= 255))
+    {
+        short s = VkKeyScan(keysym);
+        if (s == -1)
+        {
+            return 0;
+        }
+        *vkCode = LOBYTE(s);
+        // modifierState = HIBYTE(s);
+    }
+    else
+    {
+        auto it = vkMap.find(keysym);
+        if (it == vkMap.end())
+        {
+            return 0;
+        }
+        *vkCode = it->second;
+        DWORD flags = 0;
+        if (extendedMap[keysym])
+            *extended = 1;
+    }
+    return 1;
+}
+
+static win32::SKeyboard keyboard;
+extern "C" int win32_keysym_to_vkey(unsigned int keysym, unsigned char* vkCode, unsigned char* extended) {
+  return keyboard.keysym_to_vkey(keysym, vkCode, extended);
+}

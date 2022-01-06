@@ -56,6 +56,7 @@ namespace rfb {
       void keyEvent(rdr::U32 keysym, rdr::U32 keycode, bool down);
       static BoolParameter deadKeyAware;
       static BoolParameter rawKeyboard;
+      int keysym_to_vkey(unsigned int keysym, unsigned char* vkCode, unsigned char* extended);
     private:
       std::map<rdr::U32,rdr::U8> vkMap;
       std::map<rdr::U32,bool> extendedMap;
