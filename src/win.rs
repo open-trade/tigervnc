@@ -5,7 +5,7 @@ extern "C" {
 
 pub fn vkey_to_keysym(vkey: u32, extended: i32) -> Option<u32> {
     let v = unsafe { win32_vkey_to_keysym(vkey, extended) };
-    if v < 0 {
+    if v <= 0 {
         None
     } else {
         Some(v as _)

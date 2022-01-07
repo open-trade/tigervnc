@@ -4,7 +4,7 @@ extern "C" {
 
 pub fn vkey_to_keysym(vkey: u32, _extended: i32) -> Option<u32> {
     let v = unsafe { osx_vkey_to_keysym(vkey as _) };
-    if v < 0 {
+    if v <= 0 {
         None
     } else {
         Some(v as _)

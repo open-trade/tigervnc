@@ -5,8 +5,8 @@ fn main() {
     build_windows();
     #[cfg(target_os = "macos")]
     build_macos();
-    #[cfg(target_os = "linux")]
-    build_linux();
+    #[cfg(unix)]
+    build_unix();
 }
 
 #[cfg(windows)]
@@ -33,12 +33,12 @@ fn build_macos() {
         .compile("libtigervnc.a");
 }
 
-#[cfg(target_os = "linux")]
-fn build_linux() {
+#[cfg(unix)]
+fn build_unix() {
     cc::Build::new()
         .includes(Path::new("unix"))
         .includes(Path::new("common"))
         .flag("-DKEYBOARD_ONLY")
-        .files(&[])
+        .files(&["src/unix.cc"])
         .compile("libtigervnc.a");
 }
