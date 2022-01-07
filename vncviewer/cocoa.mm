@@ -458,8 +458,10 @@ extern "C" int osx_vkey_to_keysym(UInt16 key_code) {
     return NoSymbol;
 
   // FIXME: Some dead keys are given as NBSP + combining character
-  if ([chars length] != 1)
+  if ([chars length] != 1) {
+    [chars release];
     return NoSymbol;
+  }
 
 #ifndef KEYBOARD_ONLY
   // Dead key?
@@ -467,7 +469,9 @@ extern "C" int osx_vkey_to_keysym(UInt16 key_code) {
     return ucs2keysym(ucs2combining([chars characterAtIndex:0]));
 #endif
 
-  return ucs2keysym([chars characterAtIndex:0]);
+  int ret = ucs2keysym([chars characterAtIndex:0]);
+  [chars release];
+  return ret;
 }
 
 static int cocoa_open_hid(io_connect_t *ioc)
